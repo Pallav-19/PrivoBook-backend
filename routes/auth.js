@@ -82,7 +82,6 @@ router.post(
               {
                 userId: founduser._id,
                 email: founduser.email,
-                password: founduser.password,
                 name: founduser.name,
               },
               process.env.JWT_SECRET
