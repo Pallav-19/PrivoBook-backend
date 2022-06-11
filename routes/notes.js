@@ -4,7 +4,7 @@ const Note = require("../models/notes.js");
 const { body, validationResult } = require("express-validator");
 const checkAuth = require("../validators/token-validator.js");
 router.get("/fetchAllNotes", (req, res) => {
-  Note.find({ user: req.user.id })
+  Note.find()
     .then((foundNotes) => {
       res.status(200).json({ payload: foundNotes, message: "notes found!" });
     })

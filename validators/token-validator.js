@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 module.exports = (req, res, next) => {
   try {
-    const token = req.headers.authorizarion.split(" ")[1];
+    const token = req.headers.authorizarion;
     const decodedToken = jwt.decode(token, process.env.JWT_SECRET);
     req.userData = {
       userId: decodedToken.userID,
