@@ -3,7 +3,7 @@ const db = require("./db.config");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const port = 8080 || process.env.PORT;
+const port =  process.env.PORT || 8080;
 const Cors = require("cors");
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,7 +15,7 @@ app.get("/", (req, res, next) => {
 app.use(Cors());
 
 const authRoutes = require("./routes/auth.js");
-app.use("/api/auth", authRoutes);
+app.use("/api/auth/", authRoutes);
 const noteRoutes = require("./routes/notes.js");
 app.use("/api/note/", noteRoutes);
 app.listen(port, () => {

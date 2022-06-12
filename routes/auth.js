@@ -18,9 +18,16 @@ router.post(
     }),
   ],
   (req, res, next) => {
+    let success = false;
     errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      let message = [];
+      errors.array().forEach((error) => {
+        message.push(error.msg);
+      });
+      return res
+        .status(400)
+        .json({ message: message.toString(), success: success });
     }
     User.findOne({ email: req.body.email }, (founUser) => {
       if (!founUser) {
@@ -34,25 +41,32 @@ router.post(
                   email: req.body.email,
                 })
                   .then((user) => {
+                    success = true;
                     res.status(201).json({
                       userData: user,
                       message: "user saved successfully!",
+                      success: success,
                     });
                   })
                   .catch((err) => {
-                    res.status(400).json({ message: err.message });
+                    res
+                      .status(400)
+                      .json({ message: err.message, success: success });
                   });
               } else {
-                console.log(err.message);
+                res
+                  .status(400)
+                  .json({ message: err.message, success: success });
               }
             });
           } else {
-            console.log(err.message);
+            res.status(400).json({ message: err.message, success: success });
           }
         });
       } else {
         res.status(400).json({
           message: "User already exists!",
+          success: success,
         });
       }
     });
@@ -66,44 +80,65 @@ router.post(
     body("password", "password cannot be blank!").exists(),
   ],
   (req, res) => {
+    let success = false;
     errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      let message = [];
+      errors.array().forEach((error) => {
+        message.push(error.msg);
+      });
+      return res
+        .status(400)
+        .json({ message: message.toString(), success: success });
     }
     if (req.body) {
-      User.findOne({ email: req.body.email }, (founduser) => {
-        if (founduser) {
-          let comparison = bcryptjs.compare(
-            req.body.password,
-            founduser.password
-          );
-          if (comparison) {
-            const token = jwt.sign(
-              {
-                userId: founduser._id,
-                email: founduser.email,
-                name: founduser.name,
-              },
-              process.env.JWT_SECRET
+      console.log(req.body);
+      User.findOne({ email: req.body.email })
+        .then((founduser) => {
+          console.log(founduser);
+          if (founduser) {
+            let comparison = bcryptjs.compare(
+              req.body.password,
+              founduser.password
             );
-            res.status(200).json({
-              message: "login successfull",
-              token: token,
-            });
+            if (comparison) {
+              const token = jwt.sign(
+                {
+                  userId: founduser._id,
+                  email: founduser.email,
+                  name: founduser.name,
+                },
+                process.env.JWT_SECRET
+              );
+              success = true;
+              res.status(200).json({
+                message: "login successfull",
+                token: token,
+                success: success,
+              });
+            } else {
+              res.status(400).json({
+                message: "Password did not match",
+                success: success,
+              });
+            }
           } else {
             res.status(400).json({
-              message: "Password did not match",
+              message: "user not found!",
+              success: success,
             });
           }
-        } else {
-          res.status(400).json({
-            message: "user not found!",
+        })
+        .catch((err) => {
+          res.status(404).json({
+            message: err.message,
+            success: success,
           });
-        }
-      });
+        });
     } else {
       res.status(400).json({
         message: "invalid data entered",
+        success: success,
       });
     }
   }
