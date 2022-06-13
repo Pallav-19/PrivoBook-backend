@@ -2,18 +2,15 @@ require("dotenv").config();
 const db = require("./db.config");
 const express = require("express");
 const app = express();
-const path = require('path')
+const path = require("path");
 const bodyParser = require("body-parser");
-const port =  process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 const Cors = require("cors");
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 db();
-app.get("/", (req, res, next) => {
-  res.send("Welcome to iNotebook");
-  next();
-});
 app.use(Cors());
+app.use("/", express.static(path.join(__dirname, "react")));
 
 const authRoutes = require("./routes/auth.js");
 app.use("/api/auth/", authRoutes);
