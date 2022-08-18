@@ -2,9 +2,12 @@
   "name": "inotebook-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "startServer": "nodemon server.js"
+    "startServer": "node index.js"
+  },
+  "engines": {
+    "node": ">=14.0 <=16.0"
   },
   "author": "pallav",
   "license": "ISC",

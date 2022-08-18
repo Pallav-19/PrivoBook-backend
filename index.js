@@ -15,6 +15,7 @@ app.use("/", express.static(path.join(__dirname, "react")));
 const authRoutes = require("./routes/auth.js");
 app.use("/api/auth/", authRoutes);
 const noteRoutes = require("./routes/notes.js");
+const user = require("./models/auth/user");
 app.use("/api/note/", noteRoutes);
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "react", "index.html"));
